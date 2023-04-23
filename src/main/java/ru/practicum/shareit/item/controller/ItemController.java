@@ -16,6 +16,7 @@ import java.util.List;
 public class ItemController {
 
     private final ItemService itemService;
+
     @PostMapping
     public ItemDto post(@RequestHeader("X-Sharer-User-Id") Long userId,
                         @Valid @RequestBody ItemDto itemDto) {

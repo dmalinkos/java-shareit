@@ -1,6 +1,5 @@
 package ru.practicum.shareit.user.repository;
 
-import org.springframework.validation.annotation.Validated;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 

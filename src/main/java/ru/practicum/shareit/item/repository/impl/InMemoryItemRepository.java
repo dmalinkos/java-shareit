@@ -4,10 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exception.EntityNotExistException;
 import ru.practicum.shareit.exception.IncorrectOwnerException;
-import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.repository.ItemRepository;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Repository
@@ -16,8 +19,8 @@ public class InMemoryItemRepository implements ItemRepository {
     private final Map<Long, Item> items = new HashMap<>();
     private Long generatedId = 1L;
 
-    private final String ITEM_NOT_EXIST_MSG = "Item with 'id = %d' is not exist";
-    private final String INCORRECT_ITEM_OWNER = "User with 'id = %d is not owner of item with 'id = %d'";
+    private static final String ITEM_NOT_EXIST_MSG = "Item with 'id = %d' is not exist";
+    private static final String INCORRECT_ITEM_OWNER = "User with 'id = %d is not owner of item with 'id = %d'";
 
     @Override
     public Item save(Item item, Long userId) {
