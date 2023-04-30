@@ -2,6 +2,7 @@ package ru.practicum.shareit.user.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.exception.EntityNotExistException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.user.service.UserService;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private static final String USER_NOT_EXIST_MSG = "User with 'id = %d' is not exist";
 
     @Override
     public UserDto save(UserDto userDto) {
@@ -22,12 +24,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto patchById(Long userId, UserDto patchUser) {
-        return UserMapper.toUserDto(userRepository.patch(userId, patchUser));
+        return userRepository.patch(userId, patchUser)
+                .map(UserMapper::toUserDto)
+                .orElseThrow(() -> new EntityNotExistException(String.format(USER_NOT_EXIST_MSG, userId)));
     }
 
     @Override
     public UserDto findById(Long userId) {
-        return UserMapper.toUserDto(userRepository.findById(userId));
+        return userRepository.findById(userId)
+                .map(UserMapper::toUserDto)
+                .orElseThrow(() -> new EntityNotExistException(String.format(USER_NOT_EXIST_MSG, userId)));
     }
 
     @Override
@@ -40,5 +46,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto deleteById(Long userId) {
         return UserMapper.toUserDto(userRepository.deleteById(userId));
+    }
+
+    @Override
+    public void checkIfUserExists(Long userId) {
+        if (!userRepository.checkIfUserExists(userId))
+            throw new EntityNotExistException(String.format(USER_NOT_EXIST_MSG, userId));
     }
 }

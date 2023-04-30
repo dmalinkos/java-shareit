@@ -2,14 +2,18 @@ package ru.practicum.shareit.item.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.exception.EntityNotExistException;
+import ru.practicum.shareit.exception.IncorrectOwnerException;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.item.util.ItemMapper;
-import ru.practicum.shareit.user.repository.impl.InMemoryUserRepository;
+import ru.practicum.shareit.user.service.UserService;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -17,23 +21,30 @@ import java.util.stream.Collectors;
 public class ItemServiceImpl implements ItemService {
 
     private final ItemRepository itemRepository;
-    private final InMemoryUserRepository userRepository;
+    private final UserService userService;
+    private static final String ITEM_NOT_EXIST_MSG = "Item with 'id = %d' is not exist";
+    private static final String INCORRECT_ITEM_OWNER = "User with 'id = %d is not owner of item with 'id = %d'";
 
     @Override
     public ItemDto add(ItemDto itemDto, Long userId) {
-        userRepository.isExist(userId);
+        userService.checkIfUserExists(userId);
         return ItemMapper.toItemDto(itemRepository.save(ItemMapper.toItem(itemDto), userId));
     }
 
     @Override
     public ItemDto patch(ItemDto itemDto, Long userId, Long itemId) {
-        userRepository.isExist(userId);
-        return ItemMapper.toItemDto(itemRepository.patch(ItemMapper.toItem(itemDto), itemId, userId));
+        userService.checkIfUserExists(userId);
+        Optional<Item> optionalItem = itemRepository.patch(ItemMapper.toItem(itemDto), itemId, userId);
+        return optionalItem
+                .map(ItemMapper::toItemDto)
+                .orElseThrow(() -> new IncorrectOwnerException(String.format(INCORRECT_ITEM_OWNER, userId, itemId)));
     }
 
     @Override
     public ItemDto findById(Long itemId) {
-        return ItemMapper.toItemDto(itemRepository.findById(itemId));
+        return itemRepository.findById(itemId)
+                .map(ItemMapper::toItemDto)
+                .orElseThrow(() -> new EntityNotExistException(String.format(ITEM_NOT_EXIST_MSG, itemId)));
     }
 
     @Override

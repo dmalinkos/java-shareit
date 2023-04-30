@@ -2,25 +2,21 @@ package ru.practicum.shareit.item.repository.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import ru.practicum.shareit.exception.EntityNotExistException;
-import ru.practicum.shareit.exception.IncorrectOwnerException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
 public class InMemoryItemRepository implements ItemRepository {
-    private final Map<Long, Item> items = new HashMap<>();
+    private final Map<Long, Item> items = new ConcurrentHashMap<>();
     private Long generatedId = 1L;
-
-    private static final String ITEM_NOT_EXIST_MSG = "Item with 'id = %d' is not exist";
-    private static final String INCORRECT_ITEM_OWNER = "User with 'id = %d is not owner of item with 'id = %d'";
 
     @Override
     public Item save(Item item, Long userId) {
@@ -31,9 +27,12 @@ public class InMemoryItemRepository implements ItemRepository {
     }
 
     @Override
-    public Item findById(Long itemId) {
-        isExist(itemId);
-        return items.get(itemId);
+    public Optional<Item> findById(Long itemId) {
+        if (checkIfItemExists(itemId)) {
+            return Optional.of(items.get(itemId));
+        } else {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -53,11 +52,11 @@ public class InMemoryItemRepository implements ItemRepository {
     }
 
     @Override
-    public Item patch(Item item, Long itemId, Long userId) {
-        isExist(itemId);
+    public Optional<Item> patch(Item item, Long itemId, Long userId) {
+        checkIfItemExists(itemId);
         Item patchedItem = items.get(itemId);
         if (!Objects.equals(patchedItem.getOwner(), userId)) {
-            throw new IncorrectOwnerException(String.format(INCORRECT_ITEM_OWNER, userId, itemId));
+            return Optional.empty();
         }
         if (item.getName() != null) {
             patchedItem.setName(item.getName());
@@ -69,12 +68,12 @@ public class InMemoryItemRepository implements ItemRepository {
             patchedItem.setAvailable(item.getAvailable());
         }
         items.put(itemId, patchedItem);
-        return patchedItem;
+        return Optional.of(patchedItem);
     }
 
     @Override
     public Item delete(Long itemId) {
-        isExist(itemId);
+        checkIfItemExists(itemId);
         return items.remove(itemId);
     }
 
@@ -82,7 +81,7 @@ public class InMemoryItemRepository implements ItemRepository {
         return generatedId++;
     }
 
-    public void isExist(Long itemId) {
-        if (!items.containsKey(itemId)) throw new EntityNotExistException(String.format(ITEM_NOT_EXIST_MSG, itemId));
+    public boolean checkIfItemExists(Long itemId) {
+        return items.containsKey(itemId);
     }
 }
