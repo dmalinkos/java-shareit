@@ -64,11 +64,8 @@ public class ItemServiceImpl implements ItemService {
     @Transactional
     public ItemDto findById(Long itemId, Long userId) {
         LocalDateTime now = LocalDateTime.now();
-        Optional<Item> itemOptional = itemRepository.findById(itemId);
-        if (itemOptional.isEmpty()) {
-            throw new EntityNotExistException(String.format(ITEM_NOT_EXIST_MSG, itemId));
-        }
-        Item item = itemOptional.get();
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new EntityNotExistException(String.format(ITEM_NOT_EXIST_MSG, itemId)));
         Optional<Booking> lastBooking = Optional.empty();
         Optional<Booking> nextBooking = Optional.empty();
         List<CommentDto> comments = commentRepository.findAllByItemId(itemId).stream()
@@ -127,7 +124,7 @@ public class ItemServiceImpl implements ItemService {
             List<Comment> comments = commentsGroupByItem.get(item);
             List<CommentDto> commentDtos;
             if (comments == null) {
-                commentDtos = null;
+                commentDtos = Collections.emptyList();
             } else {
                 commentDtos = comments.stream()
                         .map(CommentMapper::toCommentDto)
@@ -174,7 +171,7 @@ public class ItemServiceImpl implements ItemService {
     public CommentDto addComment(Long userId, Long itemId, CommentDto commentDto) {
         LocalDateTime now = LocalDateTime.now();
         Booking booking = bookingRepository.findFirst1ByBookerIdAndItemIdAndEndBeforeAndStatus(userId, itemId, now, BookingStatus.APPROVED)
-                .orElseThrow(() -> new BadRequestException(String.format("User id=%d did not book Item=%d", userId, userId)));
+                .orElseThrow(() -> new BadRequestException(String.format("User id=%d did not book Item=%d", userId, itemId)));
         Item item = booking.getItem();
         User user = booking.getBooker();
         Comment comment = Comment.builder()

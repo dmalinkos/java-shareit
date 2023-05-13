@@ -12,7 +12,6 @@ import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.UserService;
 
-import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -28,10 +27,10 @@ public class BookingServiceImpl implements BookingService {
     private final ItemService itemService;
 
     @Override
-    public BookingDto save(@Valid BookingRequestDto bookingDto, Long userId) {
+    public BookingDto save(BookingRequestDto bookingRequestDto, Long userId) {
         User user = UserMapper.toUser(userService.findById(userId));
-        Item item = ItemMapper.toItem(itemService.findById(bookingDto.getItemId(), userId));
-        Booking booking = BookingMapper.toBooking(bookingDto);
+        Item item = ItemMapper.toItem(itemService.findById(bookingRequestDto.getItemId(), userId));
+        Booking booking = BookingMapper.toBooking(bookingRequestDto);
         validateBooking(booking, item, userId);
         booking.setBooker(user);
         booking.setItem(item);
@@ -127,8 +126,8 @@ public class BookingServiceImpl implements BookingService {
     }
 
     private void validateBooking(Booking booking, Item item, Long bookerId) {
-        if (Objects.equals(bookerId, item.getId())) {
-            throw new EntityNotExistException(String.format("User with id=%d is owner Item with id=%d", bookerId, item.getId()));
+        if (Objects.equals(bookerId, item.getOwner().getId())) {
+            throw new EntityNotExistException(String.format("User with id=%d is owner of Item with id=%d", bookerId, item.getId()));
         }
         if (!item.getAvailable()) {
             throw new UnavailableError(String.format("Item with id=%d is unavailable", item.getId()));
