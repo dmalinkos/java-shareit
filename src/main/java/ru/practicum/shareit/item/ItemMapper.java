@@ -6,6 +6,7 @@ public class ItemMapper {
         return Item.builder()
                 .id(itemDto.getId())
                 .name(itemDto.getName())
+                .owner(itemDto.getOwner())
                 .description(itemDto.getDescription())
                 .available(itemDto.getAvailable())
                 .build();

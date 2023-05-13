@@ -66,6 +66,7 @@ public class ItemServiceImpl implements ItemService {
         LocalDateTime now = LocalDateTime.now();
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new EntityNotExistException(String.format(ITEM_NOT_EXIST_MSG, itemId)));
+        User owner = UserMapper.toUser(userService.findById(userId));
         Optional<Booking> lastBooking = Optional.empty();
         Optional<Booking> nextBooking = Optional.empty();
         List<CommentDto> comments = commentRepository.findAllByItemId(itemId).stream()
@@ -77,6 +78,7 @@ public class ItemServiceImpl implements ItemService {
         }
         return ItemDto.builder()
                 .id(item.getId())
+                .owner(owner)
                 .name(item.getName())
                 .description(item.getDescription())
                 .available(item.getAvailable())
@@ -133,6 +135,7 @@ public class ItemServiceImpl implements ItemService {
 
             ItemDto itemDto = ItemDto.builder()
                     .id(item.getId())
+                    .owner(item.getOwner())
                     .name(item.getName())
                     .description(item.getDescription())
                     .available(item.getAvailable())

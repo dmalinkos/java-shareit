@@ -6,7 +6,7 @@ import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.exception.EntityNotExistException;
 import ru.practicum.shareit.exception.UnavailableError;
 import ru.practicum.shareit.item.Item;
-import ru.practicum.shareit.item.ItemMapper;
+import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserMapper;
@@ -22,14 +22,16 @@ import java.util.stream.Collectors;
 public class BookingServiceImpl implements BookingService {
     private static final String INCORRECT_ITEM_OWNER = "User with 'id = %d is not owner of item with 'id = %d'";
     private static final String BOOKING_NOT_EXIST_MSG = "Booking with id=%d is not exist";
+    private static final String ITEM_NOT_EXIST_MSG = "Item with 'id = %d' is not exist";
     private final BookingRepository bookingRepository;
+    private final ItemRepository itemRepository;
     private final UserService userService;
     private final ItemService itemService;
 
     @Override
     public BookingDto save(BookingRequestDto bookingRequestDto, Long userId) {
         User user = UserMapper.toUser(userService.findById(userId));
-        Item item = ItemMapper.toItem(itemService.findById(bookingRequestDto.getItemId(), userId));
+        Item item = itemRepository.findById(bookingRequestDto.getItemId()).orElseThrow(() -> new EntityNotExistException(String.format(ITEM_NOT_EXIST_MSG, bookingRequestDto.getItemId())));
         Booking booking = BookingMapper.toBooking(bookingRequestDto);
         validateBooking(booking, item, userId);
         booking.setBooker(user);
@@ -138,6 +140,5 @@ public class BookingServiceImpl implements BookingService {
         if (booking.getStart().isEqual(booking.getEnd())) {
             throw new BadRequestException(String.format("StartTime: %s is equal EndTime: %s", booking.getStart(), booking.getEnd()));
         }
-
     }
 }
