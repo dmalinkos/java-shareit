@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Builder
 public class CommentDto {
     Long id;
-    @NotBlank(message = "Comment cannot be blank", groups = Create.class)
+    @NotBlank(message = "Comment can not be blank", groups = Create.class)
     String text;
     String authorName;
     @Builder.Default
