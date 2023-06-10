@@ -9,9 +9,9 @@ public interface ItemService {
 
     ItemDto findById(Long itemId, Long userId);
 
-    List<ItemDto> findAllByOwner(Long userId);
+    List<ItemDto> findAllByOwner(Long userId, Long from, Long size);
 
-    List<ItemDto> search(String text);
+    List<ItemDto> search(String text, Long from, Long size);
 
     CommentDto addComment(Long userId, Long itemId, CommentDto commentDto);
 }

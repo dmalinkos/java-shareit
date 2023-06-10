@@ -1,11 +1,14 @@
 package ru.practicum.shareit.request;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
 
+import java.util.List;
+
 public interface ItemRequestRepository extends CrudRepository<ItemRequest, Long> {
 
-    Page<ItemRequest> findAllByRequestorId(Long requestor_id, Pageable pageable);
+    List<ItemRequest> findByRequestorIdOrderByCreatedAsc(Long requestorId);
+
+    List<ItemRequest> findByRequestorIdNot(Long requestorId, Pageable pageable);
 
 }

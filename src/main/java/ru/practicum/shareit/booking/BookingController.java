@@ -1,14 +1,18 @@
 package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @RestController
 @RequestMapping(path = "/bookings")
 @RequiredArgsConstructor
+@Validated
 public class BookingController {
     private final BookingService bookingService;
 
@@ -34,16 +38,20 @@ public class BookingController {
     @GetMapping
     public List<BookingDto> findAllByState(
             @RequestHeader("X-Sharer-User-Id") Long userId,
-            @RequestParam(name = "state", required = false, defaultValue = "ALL") String stateParam) {
+            @RequestParam(name = "state", required = false, defaultValue = "ALL") String stateParam,
+            @RequestParam(defaultValue = "0") @PositiveOrZero Long from,
+            @RequestParam(defaultValue = "10") @Positive Long size) {
         BookingState state = bookingStateFromStateParam(stateParam);
-        return bookingService.findAllByState(state, userId);
+        return bookingService.findAllByState(state, userId, from, size);
     }
 
     @GetMapping("/owner")
     public List<BookingDto> findAllByOwner(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                           @RequestParam(name = "state", required = false, defaultValue = "ALL") String stateParam) {
+                                           @RequestParam(name = "state", required = false, defaultValue = "ALL") String stateParam,
+                                           @RequestParam(defaultValue = "0") @PositiveOrZero Long from,
+                                           @RequestParam(defaultValue = "10") @Positive Long size) {
         BookingState state = bookingStateFromStateParam(stateParam);
-        return bookingService.findAllByOwner(state, userId);
+        return bookingService.findAllByOwner(state, userId, from, size);
     }
 
     private BookingState bookingStateFromStateParam(String stateParam) {

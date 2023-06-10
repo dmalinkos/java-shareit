@@ -5,11 +5,14 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.Create;
 
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @RestController
 @RequestMapping(path = "/requests")
 @RequiredArgsConstructor
+@Validated
 public class ItemRequestController {
     private final ItemRequestService itemRequestService;
 
@@ -20,20 +23,20 @@ public class ItemRequestController {
     }
 
     @GetMapping("/{requestId}")
-    public ItemRequestDto getRequestById(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                         @PathVariable(name = "requestId") Long requestId) {
+    public ItemRequestResponseDto getRequestById(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                                 @PathVariable(name = "requestId") Long requestId) {
         return itemRequestService.findItemRequestById(userId, requestId);
     }
 
     @GetMapping
-    public List<ItemRequestDto> getAllUserRequests(@RequestHeader("X-Sharer-User-Id") Long userId) {
+    public List<ItemRequestResponseDto> getAllUserRequests(@RequestHeader("X-Sharer-User-Id") Long userId) {
         return itemRequestService.findAllByRequestorId(userId);
     }
 
     @GetMapping("/all")
-    public List<ItemRequestDto> getALlRequests(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                               @RequestParam(name = "from") Long from,
-                                               @RequestParam(name = "size") Long size) {
+    public List<ItemRequestResponseDto> getALlRequests(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                                       @RequestParam(defaultValue = "0") @PositiveOrZero Long from,
+                                                       @RequestParam(defaultValue = "10") @Positive Long size) {
         return itemRequestService.findAllSizeFromRequestId(userId, from, size);
     }
 }
