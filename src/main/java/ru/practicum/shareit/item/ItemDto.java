@@ -2,6 +2,7 @@ package ru.practicum.shareit.item;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 import lombok.Value;
 import ru.practicum.shareit.user.User;
 
@@ -28,6 +29,7 @@ public class ItemDto {
 
     @Getter
     @Builder
+    @ToString
     static class BookingDto {
         Long id;
         LocalDateTime start;

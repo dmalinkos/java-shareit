@@ -20,14 +20,15 @@ public class ItemController {
     @PostMapping
     public ItemDto post(@RequestHeader("X-Sharer-User-Id") Long userId,
                         @Valid @RequestBody ItemDto itemDto) {
-        return itemService.add(itemDto, userId);
+        return itemService.save(itemDto, userId);
     }
 
     @PostMapping("/{itemId}/comment")
     public CommentDto postItemComment(@RequestHeader("X-Sharer-User-Id") Long userId,
                                       @PathVariable Long itemId,
                                       @RequestBody @Validated(value = Create.class) CommentDto commentDto) {
-        return itemService.addComment(userId, itemId, commentDto);
+        CommentDto commentDto1 = itemService.addComment(userId, itemId, commentDto);
+        return commentDto1;
     }
 
     @PatchMapping("/{itemId}")

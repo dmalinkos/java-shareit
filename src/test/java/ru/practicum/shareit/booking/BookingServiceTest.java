@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.exception.EntityNotExistException;
+import ru.practicum.shareit.exception.UnavailableError;
 import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.user.User;
@@ -126,19 +127,6 @@ class BookingServiceTest {
 
     }
 
-    //    @Test
-//    void save_whenUserIdInvalid_thenEntityNotExist() {
-//
-//        doThrow(EntityNotExistException.class)
-//                .when(userService).findById(bookerId);
-//
-//        assertThrows(EntityNotExistException.class, () -> bookingService.save(bookingRequestDto, bookerId));
-//        verify(userService, times(1)).findById(anyLong());
-//        verify(itemRepository, never()).findById(any());
-//        verify(bookingRepository, never()).save(any());
-//
-//    }
-//
     @Test
     void save_whenBookingRequestDtoItemIdInvalid_thenEntityNotExist() {
 
@@ -153,18 +141,51 @@ class BookingServiceTest {
     }
 
     @Test
+    void save_whenItemUnavailable_thenUnavailableError() {
+        item = Item.builder()
+                .id(itemId)
+                .name("itemName")
+                .description("itemDescription")
+                .owner(owner)
+                .available(false)
+                .build();
+        when(userService.findById(bookerId)).thenReturn(bookerDto);
+        when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
+
+        assertThrows(UnavailableError.class, () -> bookingService.save(bookingRequestDto, bookerId));
+        verify(userService, times(1)).findById(anyLong());
+        verify(itemRepository, times(1)).findById(any());
+        verify(bookingRepository, never()).save(any());
+
+    }
+
+    @Test
     void update_whenInputValidAndApprovedIsTrue_thenBookingDto() {
 
         when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(BookingMapper.toBooking(bookingDto)));
-        when(bookingRepository.save(any())).thenAnswer(invocationOnMock -> {
-            Booking booking = invocationOnMock.getArgument(0, Booking.class);
-            booking.setStatus(BookingStatus.APPROVED);
-            return booking;
-        });
+        when(bookingRepository.save(any())).thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0, Booking.class));
 
         BookingDto updatedBookingDto = bookingService.update(ownerId, bookingId, true);
 
         assertEquals(updatedBookingDto.getStatus(), BookingStatus.APPROVED);
+        assertEquals(bookingDto.getId(), updatedBookingDto.getId());
+        assertEquals(bookingDto.getStart(), updatedBookingDto.getStart());
+        assertEquals(bookingDto.getEnd(), updatedBookingDto.getEnd());
+        assertEquals(bookingDto.getItem(), updatedBookingDto.getItem());
+        verify(bookingRepository, times(1)).findById(any());
+        verify(bookingRepository, times(1)).save(any());
+
+    }
+
+    @Test
+    void update_whenInputValidAndApprovedIsFalse_thenBookingDto() {
+
+        when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(BookingMapper.toBooking(bookingDto)));
+        when(bookingRepository.save(any())).thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0, Booking.class));
+
+        BookingDto updatedBookingDto = bookingService.update(ownerId, bookingId, false);
+
+        assertEquals(updatedBookingDto.getStatus(), BookingStatus.REJECTED);
         assertEquals(bookingDto.getId(), updatedBookingDto.getId());
         assertEquals(bookingDto.getStart(), updatedBookingDto.getStart());
         assertEquals(bookingDto.getEnd(), updatedBookingDto.getEnd());
@@ -228,7 +249,7 @@ class BookingServiceTest {
                 .build();
         when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(BookingMapper.toBooking(bookingDto)));
 
-        assertThrows(BadRequestException.class, () -> bookingService.update(ownerId, bookingId, true));
+        assertThrows(BadRequestException.class, () -> bookingService.update(ownerId, bookingId, false));
 
     }
 

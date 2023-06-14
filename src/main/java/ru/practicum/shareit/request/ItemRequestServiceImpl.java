@@ -9,7 +9,6 @@ import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserMapper;
-import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.UserService;
 
 import java.time.LocalDateTime;
@@ -22,7 +21,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ItemRequestServiceImpl implements ItemRequestService {
     private final ItemRequestRepository requestRepository;
-    private final UserRepository userRepository;
     private final ItemRepository itemRepository;
     private final UserService userService;
 
@@ -63,34 +61,17 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                 PageRequest.of(Math.toIntExact(from / size),
                         Math.toIntExact(size),
                         Sort.by("created").ascending()));
-        List<Long> requestsIds = requests.stream().map(ItemRequest::getId).collect(Collectors.toList());
-        Map<Long, List<Item>> itemsCreatedOnRequests = itemRepository.findByRequestIdIn(requestsIds).stream()
-                .collect(Collectors.groupingBy(item -> item.getRequest().getId()));
-        if (itemsCreatedOnRequests.isEmpty()) {
-            return requests.stream()
-                    .map(request -> ItemRequestMapper.toItemRequestResponseDto(
-                            request, Collections.emptyList()))
-                    .collect(Collectors.toList());
-        }
-        return requests.stream()
-                .map(request -> ItemRequestMapper.toItemRequestResponseDto(
-                        request,
-                        itemsCreatedOnRequests.get(request.getId()).stream()
-                                .map(item -> ItemRequestResponseDto.ItemDto.builder()
-                                        .id(item.getId())
-                                        .name(item.getName())
-                                        .owner(item.getOwner().getId())
-                                        .description(item.getDescription())
-                                        .available(item.getAvailable())
-                                        .requestId(item.getRequest().getId())
-                                        .build()).collect(Collectors.toList())))
-                .collect(Collectors.toList());
+        return getItemRequestResponseDtos(requests);
     }
 
     @Override
     public List<ItemRequestResponseDto> findAllByRequestorId(Long userId) {
         userService.checkIfUserExists(userId);
         List<ItemRequest> requests = requestRepository.findByRequestorIdOrderByCreatedAsc(userId);
+        return getItemRequestResponseDtos(requests);
+    }
+
+    private List<ItemRequestResponseDto> getItemRequestResponseDtos(List<ItemRequest> requests) {
         List<Long> requestsIds = requests.stream().map(ItemRequest::getId).collect(Collectors.toList());
         Map<Long, List<Item>> itemsCreatedOnRequests = itemRepository.findByRequestIdIn(requestsIds).stream()
                 .collect(Collectors.groupingBy(item -> item.getRequest().getId()));

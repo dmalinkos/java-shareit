@@ -27,9 +27,9 @@ class BookingControllerTest {
     private static final String SHARER_USER_ID_HEADER = "X-Sharer-User-Id";
     private final Long itemId = 1L;
     @MockBean
-    BookingService bookingService;
+    private BookingService bookingService;
     @Autowired
-    ObjectMapper mapper;
+    private ObjectMapper mapper;
     @Autowired
     private MockMvc mvc;
     private LocalDateTime start;
@@ -114,7 +114,7 @@ class BookingControllerTest {
 
     @SneakyThrows
     @Test
-    void save_whenInputInvalid_then() {
+    void save_whenInputInvalid_thenConstraintViolationException() {
         bookingRequestDto = BookingRequestDto.builder()
                 .itemId(null)
                 .start(start.minusDays(1))
@@ -187,6 +187,19 @@ class BookingControllerTest {
 
                 .andExpect(status().isBadRequest());
 
+    }
+
+    @SneakyThrows
+    @Test
+    void findById_whenInputValid_thenBookingDto() {
+
+        mvc.perform(get("/bookings/{bookingId}", bookingId)
+                        .header(SHARER_USER_ID_HEADER, bookerId)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+
+                .andExpect(status().isOk());
     }
 
     @SneakyThrows

@@ -3,7 +3,7 @@ package ru.practicum.shareit.item;
 import java.util.List;
 
 public interface ItemService {
-    ItemDto add(ItemDto itemDto, Long userId);
+    ItemDto save(ItemDto itemDto, Long userId);
 
     ItemDto patch(ItemDto itemDto, Long userId, Long itemId);
 

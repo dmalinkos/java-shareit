@@ -34,7 +34,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
-    public ItemDto add(ItemDto itemDto, Long userId) {
+    public ItemDto save(ItemDto itemDto, Long userId) {
         User owner = UserMapper.toUser(userService.findById(userId));
         Item addingItem = ItemMapper.toItem(itemDto);
         addingItem.setOwner(owner);
