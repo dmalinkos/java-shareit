@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Pageable;
 import ru.practicum.shareit.exception.EntityNotExistException;
 import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.item.ItemDto;
@@ -159,5 +160,19 @@ class ItemRequestServiceImplTest {
 
     }
 
+    @Test
+    void findAllSizeFromRequestId_whenInputValid_thenListOfItemRequestResponseDto() {
+
+        doNothing().when(userService).checkIfUserExists(anyLong());
+        when(requestRepository.findByRequestorIdNot(anyLong(), any(Pageable.class))).thenReturn(List.of(savedItemRequest));
+        when(itemRepository.findByRequestIdIn(anyList())).thenReturn(List.of(item));
+
+        List<ItemRequestResponseDto> itemRequestResponseDtos = itemRequestService.findAllSizeFromRequestId(anyLong(), 0L, 10L);
+
+        assertEquals(itemRequestResponseDto.toString(), itemRequestResponseDtos.get(0).toString());
+        verify(userService, only()).checkIfUserExists(anyLong());
+        verify(requestRepository, only()).findByRequestorIdNot(anyLong(), any());
+        verify(itemRepository, only()).findByRequestIdIn(anyList());
+    }
 
 }
