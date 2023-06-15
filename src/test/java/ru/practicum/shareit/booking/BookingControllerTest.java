@@ -25,7 +25,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class BookingControllerTest {
 
     private static final String SHARER_USER_ID_HEADER = "X-Sharer-User-Id";
-    private final Long itemId = 1L;
     @MockBean
     private BookingService bookingService;
     @Autowired
@@ -36,12 +35,11 @@ class BookingControllerTest {
     private LocalDateTime end;
     private BookingRequestDto bookingRequestDto;
     private BookingDto bookingDto;
-    private Long bookingId = 1L;
+    private final Long bookingId = 1L;
     private Item item;
-    private User owner;
-    private Long ownerId = 1L;
+    private final Long ownerId = 1L;
     private User booker;
-    private Long bookerId = 2L;
+    private final Long bookerId = 2L;
 
     @BeforeEach
     void setup() {
@@ -49,7 +47,7 @@ class BookingControllerTest {
         String ownerName = "ownerName";
         String ownerEmail = "ownerEmail";
 
-        owner = User.builder()
+        User owner = User.builder()
                 .id(ownerId)
                 .name(ownerName)
                 .email(ownerEmail)
@@ -67,6 +65,7 @@ class BookingControllerTest {
         String itemName = "itemName";
         String itemDescription = "itemDescription";
 
+        Long itemId = 1L;
         item = Item.builder()
                 .id(itemId)
                 .name(itemName)

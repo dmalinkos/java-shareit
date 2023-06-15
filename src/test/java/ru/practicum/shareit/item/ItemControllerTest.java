@@ -4,6 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -13,6 +18,7 @@ import ru.practicum.shareit.user.User;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
@@ -34,8 +40,8 @@ class ItemControllerTest {
     private ItemDto itemDto;
 
     private User owner;
-    private Long userId = 1L;
-    private Long itemId = 1L;
+    private final Long userId = 1L;
+    private final Long itemId = 1L;
 
     @BeforeEach
     void setup() {
@@ -78,17 +84,13 @@ class ItemControllerTest {
     }
 
     @SneakyThrows
-    @Test
-    void post_whenInvalidInputItemDto_thenItemDto() {
-
-        inputItemDto = ItemDto.builder()
-                .name("")
-                .description("")
-                .build();
+    @ParameterizedTest
+    @ArgumentsSource(EmployeesArgumentsProvider.class)
+    void post_whenInvalidInput_thenConstraintViolationException(ItemDto itemDto) {
 
         mvc.perform(post("/items")
                         .header(SHARER_USER_ID_HEADER, userId)
-                        .content(mapper.writeValueAsString(inputItemDto))
+                        .content(mapper.writeValueAsString(itemDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -96,6 +98,18 @@ class ItemControllerTest {
                 .andExpect(status().isBadRequest());
         verify(itemService, never()).save(any(), anyLong());
 
+    }
+
+    static class EmployeesArgumentsProvider implements ArgumentsProvider {
+        @Override
+        public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
+            return Stream.of(
+                    Arguments.of(ItemDto.builder().name("").description("").build()),
+                    Arguments.of(ItemDto.builder().description("").build()),
+                    Arguments.of(ItemDto.builder().name("").build()),
+                    Arguments.of(ItemDto.builder().build())
+            );
+        }
     }
 
     @SneakyThrows

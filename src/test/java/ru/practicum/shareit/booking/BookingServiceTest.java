@@ -393,10 +393,6 @@ class BookingServiceTest {
     }
 
     @Test
-    void findAllByOwner() {
-    }
-
-    @Test
     void findAllByOwner_whenStateIsCurrent_thenInvokeFindAllByItemOwnerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc() {
 
         when(bookingRepository.findAllByItemOwnerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(any(), any(), any(), any()))
