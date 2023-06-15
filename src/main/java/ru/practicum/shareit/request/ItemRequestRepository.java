@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface ItemRequestRepository extends CrudRepository<ItemRequest, Long> {
 
-    List<ItemRequest> findByRequestorIdOrderByCreatedAsc(Long requestorId);
+    List<ItemRequest> findByRequestorIdOrderByCreatedDesc(Long requestorId);
 
     List<ItemRequest> findByRequestorIdNot(Long requestorId, Pageable pageable);
 

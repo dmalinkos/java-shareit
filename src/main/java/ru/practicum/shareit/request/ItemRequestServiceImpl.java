@@ -60,14 +60,14 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         List<ItemRequest> requests = requestRepository.findByRequestorIdNot(userId,
                 PageRequest.of(Math.toIntExact(from / size),
                         Math.toIntExact(size),
-                        Sort.by("created").ascending()));
+                        Sort.by("created").descending()));
         return getItemRequestResponseDtos(requests);
     }
 
     @Override
     public List<ItemRequestResponseDto> findAllByRequestorId(Long userId) {
         userService.checkIfUserExists(userId);
-        List<ItemRequest> requests = requestRepository.findByRequestorIdOrderByCreatedAsc(userId);
+        List<ItemRequest> requests = requestRepository.findByRequestorIdOrderByCreatedDesc(userId);
         return getItemRequestResponseDtos(requests);
     }
 
