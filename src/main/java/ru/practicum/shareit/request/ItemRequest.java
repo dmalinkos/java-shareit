@@ -1,6 +1,7 @@
 package ru.practicum.shareit.request;
 
 import lombok.*;
+import ru.practicum.shareit.user.User;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -14,20 +15,22 @@ import java.time.LocalDateTime;
 @Setter
 @ToString
 @Entity
-@Table(name = "item_requests", schema = "public")
+@Table(name = "requests", schema = "public")
 public class ItemRequest {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @NotNull
+    @Column(name = "request_id")
     private Long id;
 
     @Column
     @NotBlank
     private String description;
 
-    @Column
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "requestor_id")
     @NotNull
-    private Long requestor;
+    private User requestor;
 
     @Column
     private LocalDateTime created;

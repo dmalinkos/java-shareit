@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.EntityNotExistException;
 
+import javax.transaction.Transactional;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,14 +16,14 @@ public class UserServiceImpl implements UserService {
     private static final String USER_NOT_EXIST_MSG = "User with 'id = %d' is not exist";
 
     @Override
-//    @Transactional
+    @Transactional
     public UserDto save(UserDto userDto) {
         User user = userRepository.save(UserMapper.toUser(userDto));
         return UserMapper.toUserDto(user);
     }
 
     @Override
-//    @Transactional
+    @Transactional
     public UserDto patchById(Long userId, UserDto patchUserDto) {
         User patchUser = UserMapper.toUser(patchUserDto);
         User curUser = userRepository.findById(userId)
@@ -38,7 +39,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-//    @Transactional
     public UserDto findById(Long userId) {
         return userRepository.findById(userId)
                 .map(UserMapper::toUserDto)
@@ -46,7 +46,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-//    @Transactional
     public List<UserDto> findAll() {
         return ((Collection<User>) userRepository.findAll()).stream()
                 .map(UserMapper::toUserDto)
@@ -54,7 +53,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-//    @Transactional
+    @Transactional
     public void deleteById(Long userId) {
         userRepository.deleteById(userId);
     }

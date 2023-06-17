@@ -9,8 +9,8 @@ public interface BookingService {
 
     BookingDto findById(Long bookingId, Long userId);
 
-    List<BookingDto> findAllByState(BookingState state, Long userId);
+    List<BookingDto> findAllByState(BookingState state, Long userId, Long from, Long size);
 
-    List<BookingDto> findAllByOwner(BookingState state, Long userId);
+    List<BookingDto> findAllByOwner(BookingState state, Long userId, Long from, Long size);
 
 }

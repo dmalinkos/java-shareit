@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.Booking;
@@ -9,6 +10,8 @@ import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.exception.EntityNotExistException;
 import ru.practicum.shareit.exception.IncorrectOwnerException;
+import ru.practicum.shareit.request.ItemRequest;
+import ru.practicum.shareit.request.ItemRequestRepository;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.UserService;
@@ -27,13 +30,19 @@ public class ItemServiceImpl implements ItemService {
     private final BookingRepository bookingRepository;
     private final ItemRepository itemRepository;
     private final CommentRepository commentRepository;
+    private final ItemRequestRepository requestRepository;
 
     @Override
     @Transactional
-    public ItemDto add(ItemDto itemDto, Long userId) {
+    public ItemDto save(ItemDto itemDto, Long userId) {
         User owner = UserMapper.toUser(userService.findById(userId));
         Item addingItem = ItemMapper.toItem(itemDto);
         addingItem.setOwner(owner);
+        if (itemDto.getRequestId() != null) {
+            ItemRequest itemRequest = requestRepository.findById(itemDto.getRequestId())
+                    .orElseThrow(() -> new EntityNotExistException(String.format("ItemRequest with id=%d is not exist", itemDto.getRequestId())));
+            addingItem.setRequest(itemRequest);
+        }
         Item item = itemRepository.save(addingItem);
         return ItemMapper.toItemDto(item);
     }
@@ -100,9 +109,11 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
-    public List<ItemDto> findAllByOwner(Long userId) {
+    public List<ItemDto> findAllByOwner(Long userId, Long from, Long size) {
         LocalDateTime now = LocalDateTime.now();
-        List<Item> items = itemRepository.findByOwner_Id(userId);
+        PageRequest page = PageRequest.of(Math.toIntExact(from / size),
+                Math.toIntExact(size));
+        List<Item> items = itemRepository.findByOwnerId(userId, page);
         List<Booking> bookings = bookingRepository.findAllByItemOwnerIdOrderByStart(userId);
         Map<Item, List<Booking>> bookingGroupByItem = bookings.stream()
                 .collect(Collectors.groupingBy(Booking::getItem));
@@ -160,11 +171,14 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
-    public List<ItemDto> search(String text) {
+    public List<ItemDto> search(String text, Long from, Long size) {
+        PageRequest page = PageRequest.of(Math.toIntExact(from / size),
+                Math.toIntExact(size));
         if (text.isBlank()) {
             return Collections.emptyList();
         }
-        return itemRepository.findAllByNameOrDescriptionContainingIgnoreCaseAndAvailableTrue(text, text).stream()
+        return itemRepository.findAllByNameOrDescriptionContainingIgnoreCaseAndAvailableTrue(text, text, page)
+                .stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
     }
