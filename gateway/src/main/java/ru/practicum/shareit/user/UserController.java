@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
 
 @Controller
 @RequestMapping(path = "/users")
@@ -23,25 +24,25 @@ public class UserController {
         return userClient.saveUser(userDto);
     }
 
-//    @PatchMapping("/{userId}")
-//    public UserDto patch(@RequestBody UserDto userDto,
-//                         @PathVariable Long userId) {
-//        return userService.patchById(userId, userDto);
-//    }
-//
-//    @GetMapping("/{userId}")
-//    public UserDto findById(@PathVariable Long userId) {
-//        return userService.findById(userId);
-//    }
-//
-//    @GetMapping
-//    public List<UserDto> findAll() {
-//        return new ArrayList<>(userService.findAll());
-//    }
-//
-//    @DeleteMapping("/{userId}")
-//    public void deleteById(@PathVariable Long userId) {
-//        userService.deleteById(userId);
-//    }
+    @PatchMapping("/{userId}")
+    public ResponseEntity<Object> patch(@RequestBody UserDto userDto,
+                                        @PathVariable @Positive Long userId) {
+        return userClient.patchUser(userDto, userId);
+    }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<Object> findById(@PathVariable @Positive Long userId) {
+        return userClient.getUser(userId);
+    }
+
+    @GetMapping
+    public ResponseEntity<Object> findAll() {
+        return userClient.getUsers();
+    }
+
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<Object>  deleteById(@PathVariable @Positive Long userId) {
+        return userClient.deleteUser(userId);
+    }
 
 }

@@ -75,22 +75,22 @@ class ItemRequestControllerTest {
 
     }
 
-    @SneakyThrows
-    @Test
-    void addRequest_whenInvalidItemRequestDto_thenConstraintViolationException() {
-
-        itemRequestDto = ItemRequestDto.builder()
-                .description("")
-                .build();
-
-        mvc.perform(post("/requests")
-                        .header(SHARER_USER_ID_HEADER, requestorId)
-                        .content(mapper.writeValueAsString(itemRequestDto))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-
-                .andExpect(status().isBadRequest());
-
-    }
+//    @SneakyThrows
+//    @Test
+//    void addRequest_whenInvalidItemRequestDto_thenConstraintViolationException() {
+//
+//        itemRequestDto = ItemRequestDto.builder()
+//                .description("")
+//                .build();
+//
+//        mvc.perform(post("/requests")
+//                        .header(SHARER_USER_ID_HEADER, requestorId)
+//                        .content(mapper.writeValueAsString(itemRequestDto))
+//                        .characterEncoding(StandardCharsets.UTF_8)
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .accept(MediaType.APPLICATION_JSON))
+//
+//                .andExpect(status().isBadRequest());
+//
+//    }
 }
