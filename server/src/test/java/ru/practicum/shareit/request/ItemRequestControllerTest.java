@@ -10,7 +10,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.user.User;
-import ru.practicum.shareit.user.UserDto;
 
 import java.nio.charset.StandardCharsets;
 
@@ -31,21 +30,14 @@ class ItemRequestControllerTest {
     private MockMvc mvc;
     private ItemRequestDto itemRequestDto;
     private ItemRequestDto savedItemRequestDto;
-    private UserDto requestorDto;
-    private User requestor;
-    private Long requestorId = 1L;
+    private final Long requestorId = 1L;
 
     @BeforeEach
     void setup() {
         itemRequestDto = ItemRequestDto.builder()
                 .description("desc")
                 .build();
-        requestor = User.builder()
-                .id(requestorId)
-                .name("requestor")
-                .email("email@ya.ru")
-                .build();
-        requestorDto = UserDto.builder()
+        User requestor = User.builder()
                 .id(requestorId)
                 .name("requestor")
                 .email("email@ya.ru")
@@ -74,23 +66,4 @@ class ItemRequestControllerTest {
                 .andExpect(content().json(mapper.writeValueAsString(savedItemRequestDto)));
 
     }
-
-//    @SneakyThrows
-//    @Test
-//    void addRequest_whenInvalidItemRequestDto_thenConstraintViolationException() {
-//
-//        itemRequestDto = ItemRequestDto.builder()
-//                .description("")
-//                .build();
-//
-//        mvc.perform(post("/requests")
-//                        .header(SHARER_USER_ID_HEADER, requestorId)
-//                        .content(mapper.writeValueAsString(itemRequestDto))
-//                        .characterEncoding(StandardCharsets.UTF_8)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON))
-//
-//                .andExpect(status().isBadRequest());
-//
-//    }
 }

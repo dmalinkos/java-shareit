@@ -29,11 +29,11 @@ public class UserClient extends BaseClient {
     }
 
     public ResponseEntity<Object> patchUser(UserDto userDto, Long userId) {
-        return patch("/" + userId, userDto);
+        return patch(String.format("/%d", userId), userDto);
     }
 
     public ResponseEntity<Object> getUser(Long userId) {
-        return get("/" + userId, userId);
+        return get(String.format("/%d", userId), userId);
     }
 
     public ResponseEntity<Object> getUsers() {
@@ -41,6 +41,6 @@ public class UserClient extends BaseClient {
     }
 
     public ResponseEntity<Object>  deleteUser(Long userId) {
-        return delete("/" + userId, userId);
+        return delete(String.format("/%d", userId), userId);
     }
 }

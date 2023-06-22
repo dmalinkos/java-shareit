@@ -111,26 +111,6 @@ class BookingControllerTest {
         verify(bookingService).save(bookingRequestDto, bookerId);
     }
 
-//    @SneakyThrows
-//    @Test
-//    void save_whenInputInvalid_thenConstraintViolationException() {
-//        bookingRequestDto = BookingRequestDto.builder()
-//                .itemId(null)
-//                .start(start.minusDays(1))
-//                .end(end.minusMinutes(1))
-//                .build();
-//
-//        mvc.perform(post("/bookings")
-//                        .header(SHARER_USER_ID_HEADER, 2L)
-//                        .content(mapper.writeValueAsString(bookingRequestDto))
-//                        .characterEncoding(StandardCharsets.UTF_8)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON))
-//
-//                .andExpect(status().isBadRequest());
-//        verify(bookingService, never()).save(any(), any());
-//    }
-
     @SneakyThrows
     @Test
     void update_whenInputValid_thenBookingDto() {
@@ -173,21 +153,6 @@ class BookingControllerTest {
 
     }
 
-//    @SneakyThrows
-//    @Test
-//    void findAllByState_whenInvalidFromParam_thenConstraintViolationException() {
-//
-//        mvc.perform(get("/bookings")
-//                        .param("from", "-1")
-//                        .header(SHARER_USER_ID_HEADER, bookerId)
-//                        .characterEncoding(StandardCharsets.UTF_8)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON))
-//
-//                .andExpect(status().isBadRequest());
-//
-//    }
-
     @SneakyThrows
     @Test
     void findById_whenInputValid_thenBookingDto() {
@@ -200,21 +165,6 @@ class BookingControllerTest {
 
                 .andExpect(status().isOk());
     }
-
-//    @SneakyThrows
-//    @Test
-//    void findAllByState_whenInvalidSizeParam_thenConstraintViolationException() {
-//
-//        mvc.perform(get("/bookings")
-//                        .param("size", "-1")
-//                        .header(SHARER_USER_ID_HEADER, bookerId)
-//                        .characterEncoding(StandardCharsets.UTF_8)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON))
-//
-//                .andExpect(status().isBadRequest());
-//
-//    }
 
     @SneakyThrows
     @Test
@@ -231,35 +181,4 @@ class BookingControllerTest {
                 .andExpect(content().json(mapper.writeValueAsString(List.of(bookingDto))));
 
     }
-
-//    @SneakyThrows
-//    @Test
-//    void findAllByOwner_whenInvalidFromParam_thenConstraintViolationException() {
-//
-//        mvc.perform(get("/bookings/owner")
-//                        .param("from", "-1")
-//                        .header(SHARER_USER_ID_HEADER, bookerId)
-//                        .characterEncoding(StandardCharsets.UTF_8)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON))
-//
-//                .andExpect(status().isBadRequest());
-//
-//    }
-
-//    @SneakyThrows
-//    @Test
-//    void findAllByOwner_whenInvalidSizeParam_thenConstraintViolationException() {
-//
-//        mvc.perform(get("/bookings/owner")
-//                        .param("size", "-1")
-//                        .header(SHARER_USER_ID_HEADER, bookerId)
-//                        .characterEncoding(StandardCharsets.UTF_8)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON))
-//
-//                .andExpect(status().isBadRequest());
-//
-//    }
-
 }

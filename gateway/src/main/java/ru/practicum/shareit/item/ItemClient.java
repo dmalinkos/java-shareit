@@ -32,11 +32,11 @@ public class ItemClient extends BaseClient {
     }
 
     public ResponseEntity<Object> saveItemComment(Long userId, Long itemId, CommentDto commentDto) {
-        return post("/" + itemId + "/comment", userId, commentDto);
+        return post(String.format("/%d/comment", itemId), userId, commentDto);
     }
 
     public ResponseEntity<Object> patchItem(ItemDto itemDto, Long userId, Long itemId) {
-        return patch("/" + itemId, userId, itemDto);
+        return patch(String.format("/%d", itemId), userId, itemDto);
     }
 
     public ResponseEntity<Object> findAllItems(Long userId, Long from, Long size) {

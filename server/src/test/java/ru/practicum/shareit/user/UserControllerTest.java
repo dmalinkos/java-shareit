@@ -62,46 +62,6 @@ class UserControllerTest {
 
     }
 
-//    @SneakyThrows
-//    @Test
-//    void save_whenUserDtoNameIsBlank_thenConstraintViolationException() {
-//
-//        userDto = UserDto.builder()
-//                .name("")
-//                .email("email@ya.ru")
-//                .build();
-//        when(userService.save(userDto)).thenReturn(sevedUserDto);
-//
-//        mvc.perform(post("/users")
-//                        .content(mapper.writeValueAsString(userDto))
-//                        .characterEncoding(StandardCharsets.UTF_8)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isBadRequest());
-//        verify(userService, never()).save(any());
-//
-//    }
-
-//    @SneakyThrows
-//    @Test
-//    void save_whenUserDtoEmailNotValid_thenConstraintViolationException() {
-//
-//        userDto = UserDto.builder()
-//                .name("name")
-//                .email("emailya.ru")
-//                .build();
-//        when(userService.save(userDto)).thenReturn(sevedUserDto);
-//
-//        mvc.perform(post("/users")
-//                        .content(mapper.writeValueAsString(userDto))
-//                        .characterEncoding(StandardCharsets.UTF_8)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isBadRequest());
-//        verify(userService, never()).save(any());
-//
-//    }
-
     @SneakyThrows
     @Test
     void patch_whenInputValid_thenPatchedUserDto() {

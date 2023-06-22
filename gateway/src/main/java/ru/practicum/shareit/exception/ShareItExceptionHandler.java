@@ -12,25 +12,26 @@ import javax.validation.ValidationException;
 @RestControllerAdvice
 @Slf4j
 public class ShareItExceptionHandler {
+    private static final String HANDLER_NAME = "[SIEHandler]: {}";
 
     @ExceptionHandler
     @ResponseStatus(code = HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidationException(ValidationException  e) {
-        log.error("[SIEHandler]: {}", e.getMessage(), e);
+        log.error(HANDLER_NAME, e.getMessage(), e);
         return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(code = HttpStatus.BAD_REQUEST)
     public ErrorResponse handleConstraintViolationException(ConstraintViolationException e) {
-        log.error("[SIEHandler]: {}", e.getMessage(), e);
+        log.error(HANDLER_NAME, e.getMessage(), e);
         return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(code = HttpStatus.BAD_REQUEST)
     public ErrorResponse handleIllegalArgumentException(IllegalArgumentException e) {
-        log.error("[SIEHandler]: {}", e.getMessage(), e);
+        log.error(HANDLER_NAME, e.getMessage(), e);
         return new ErrorResponse(e.getMessage());
     }
 

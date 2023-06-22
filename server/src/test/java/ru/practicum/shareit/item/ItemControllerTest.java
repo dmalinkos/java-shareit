@@ -77,55 +77,6 @@ class ItemControllerTest {
 
     }
 
-//    @SneakyThrows
-//    @ParameterizedTest
-//    @ArgumentsSource(EmployeesArgumentsProvider.class)
-//    void post_whenInvalidInput_thenConstraintViolationException(ItemDto itemDto) {
-//
-//        mvc.perform(post("/items")
-//                        .header(SHARER_USER_ID_HEADER, userId)
-//                        .content(mapper.writeValueAsString(itemDto))
-//                        .characterEncoding(StandardCharsets.UTF_8)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON))
-//
-//                .andExpect(status().isBadRequest());
-//        verify(itemService, never()).save(any(), anyLong());
-//
-//    }
-//
-//    static class EmployeesArgumentsProvider implements ArgumentsProvider {
-//        @Override
-//        public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
-//            return Stream.of(
-//                    Arguments.of(ItemDto.builder().name("").description("").build()),
-//                    Arguments.of(ItemDto.builder().description("").build()),
-//                    Arguments.of(ItemDto.builder().name("").build()),
-//                    Arguments.of(ItemDto.builder().build())
-//            );
-//        }
-//    }
-
-//    @SneakyThrows
-//    @Test
-//    void postItemComment_whenCommentDtoTextIsBlank_thenConstraintViolationException() {
-//
-//        CommentDto inputCommentDto = CommentDto.builder()
-//                .text("")
-//                .build();
-//
-//        mvc.perform(post("/items/{itemId}/comment", itemId)
-//                        .header(SHARER_USER_ID_HEADER, 2L)
-//                        .content(mapper.writeValueAsString(inputCommentDto))
-//                        .characterEncoding(StandardCharsets.UTF_8)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON))
-//
-//                .andExpect(status().isBadRequest());
-//        verify(itemService, never()).addComment(anyLong(), anyLong(), any());
-//
-//    }
-
     @SneakyThrows
     @Test
     void postItemComment_whenInputValid_thenCommentDto() {
@@ -200,38 +151,6 @@ class ItemControllerTest {
         verify(itemService, only()).findAllByOwner(anyLong(), anyLong(), anyLong());
 
     }
-
-//    @SneakyThrows
-//    @Test
-//    void findAllByOwner_whenFromParamIsNegative_thenConstraintViolationException() {
-//
-//        mvc.perform(get("/items")
-//                        .header(SHARER_USER_ID_HEADER, userId)
-//                        .param("from", "-1")
-//                        .characterEncoding(StandardCharsets.UTF_8)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON))
-//
-//                .andExpect(status().isBadRequest());
-//        verify(itemService, never()).findAllByOwner(anyLong(), anyLong(), anyLong());
-//
-//    }
-
-//    @SneakyThrows
-//    @Test
-//    void findAllByOwner_whenSizeParamIsNegative_thenConstraintViolationException() {
-//
-//        mvc.perform(get("/items")
-//                        .header(SHARER_USER_ID_HEADER, userId)
-//                        .param("size", "-1")
-//                        .characterEncoding(StandardCharsets.UTF_8)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON))
-//
-//                .andExpect(status().isBadRequest());
-//        verify(itemService, never()).findAllByOwner(anyLong(), anyLong(), anyLong());
-//
-//    }
 
     @SneakyThrows
     @Test
